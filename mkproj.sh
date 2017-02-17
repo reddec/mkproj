@@ -141,6 +141,24 @@ function install_myself {
   success "Installed: now you can execute just by \"mkproj\" command"
 }
 
+function backup {
+  if [ "1$1" == "1" ]; then
+    __error "No target archive name specified"
+    exit 1
+  fi
+  tar -C "$ROOT" -zcf "$1" .
+  success "Backup created into $1"
+}
+
+function restore {
+  if [ "1$1" == "1" ]; then
+    __error "No source archive name specified"
+    exit 1
+  fi
+  tar -C "$ROOT" -xf "$1" .
+  success "Backup restored from $1"
+}
+
 function export_template {
   # Just copy content of template without processing
   if [ "1$1" == "1" ]; then
@@ -181,6 +199,12 @@ case "$1" in
   "rm" )
     remove_template "${@:2}"
   ;;
+  "backup" )
+    backup "${@:2}"
+  ;;
+  "restore" )
+    restore "${@:2}"
+  ;;
   "help" | "-h" | "--help" )
   echo "Operate directory templates"
   echo "commands:"
@@ -192,6 +216,8 @@ case "$1" in
   echo "    export   <template_name>                 Export content of template to current dir"
   echo "    init     <template_name> [project name]  Initialize directory from template"
   echo "    save     [template_name]                 Save current directory as template"
+  echo "    backup   <archive name>                  Compress all templates to tar.gz"
+  echo "    restore  <archive name>                  Unpack all templates from tar.gz"
   echo "    help                                     Show this help"
   echo "    install                                  Install this script to /usr/bin/mkproj"
   ;;
