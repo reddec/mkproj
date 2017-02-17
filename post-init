@@ -1,0 +1,28 @@
+#!/bin/bash
+set -e -o pipefail
+
+if [ "1$GITHUB_USER" == "1" ]; then
+	echo "GITHUB_USER not found"
+	read -p "User: " GITHUB_USER
+fi
+
+read -p "Repository ($(basename "`pwd`")): " REPO
+if [ "1$REPO" == "1" ]; then
+	REPO="$(basename "`pwd`")"
+fi
+
+if [ "1$GITHUB_TOKEN" == "1" ]; then
+	echo "GITHUB_TOKEN not found"
+	echo "Use token from https://github.com/settings/tokens"
+	read -p "GitHub token (or set GITHUB_TOKEN): " GITHUB_TOKEN
+fi
+
+curl -u "$GITHUB_USER:$GITHUB_TOKEN" https://api.github.com/user/repos -d "{\"name\":\"$REPO\"}"
+
+git init
+git remote add origin git@github.com:$GITHUB_USER/${REPO}.git
+git add -A
+git commit -m "Repository created"
+git push origin master
+git branch --set-upstream-to=origin/master master
+
