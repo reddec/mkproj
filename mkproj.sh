@@ -64,41 +64,43 @@ function init {
   fi
   NAME="$1"
 
-  if [ ! -d "$ROOT/$NAME" ]; then
-    __error "Unknown template: $1"
-    exit 1
-  fi
-  PROJECT="$2"
-  if [ "1$2" == "1" ]; then
-    read -p "Project name: " PROJECT
-  fi
+
+  read -p "Project name: " PROJECT
 
   if [ "1$PROJECT" == "1" ]; then
     __error "No project name specified"
     exit 1
   fi
-
   mkdir -p "$PROJECT"
   cd "$PROJECT"
-
-  info "Coping files..."
-  cp -r "$ROOT/$NAME"/* ./
-
-  info "Processing templates"
   export -f __mktemplate
-  find . -name '*.template' -exec bash -c '__mktemplate "$0"' {} \;
-
-  info "Processing CGI templates"
   export -f __mkcgi
-  find . -name '*.cgi' -exec bash -c '__mkcgi "$0"' {} \;
+  export PROJECT
 
-  if [ -x "post-init" ]; then
-    info "Executing post-init scripts"
-    ./post-init
-    rm -rf post-init
-  fi
+  for NAME in "${@:1}"; do
+    if [ ! -d "$ROOT/$NAME" ]; then
+      __error "Unknown template: $NAME"
+      continue
+    fi
 
-  success "Project initialized from template $NAME!"
+    info "Apply $NAME"
+
+    info "Coping files..."
+    cp -r "$ROOT/$NAME"/* ./
+    info "Processing templates"
+    find . -name '*.template' -exec bash -c '__mktemplate "$0"' {} \;
+    info "Processing CGI templates"
+    find . -name '*.cgi' -exec bash -c '__mkcgi "$0"' {} \;
+
+    if [ -x "post-init" ]; then
+      info "Executing post-init scripts"
+      ./post-init
+      rm -rf post-init
+    fi
+
+    success "Template $NAME done"
+  done
+  success "Project $PROJECT initialized"
 }
 
 function show_content {
@@ -214,7 +216,7 @@ case "$1" in
   fi
   echo "    rm       [template_name...]              Remove template"
   echo "    export   <template_name>                 Export content of template to current dir"
-  echo "    init     <template_name> [project name]  Initialize directory from template"
+  echo "    init     <template_name...>              Initialize directory and apply templates"
   echo "    save     [template_name]                 Save current directory as template"
   echo "    backup   <archive name>                  Compress all templates to tar.gz"
   echo "    restore  <archive name>                  Unpack all templates from tar.gz"
