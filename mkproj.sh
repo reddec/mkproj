@@ -38,7 +38,7 @@ function __mktemplate {
   filename=$(basename "$1")
   extension="${filename##*.}"
   filename="${filename%.*}"
-  cat "$1" | envsubst > "$(dirname "$1")/$filename"
+  cat "$1" | DOLLAR='$'  envsubst > "$(dirname "$1")/$filename"
   rm -f "$1"
 }
 
