@@ -1,5 +1,7 @@
 # Operate templates for projects
 
+Please see documentation https://reddec.gitbooks.io/mkproj/content/
+
 ## Usage
 
 
