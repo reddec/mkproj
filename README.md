@@ -10,10 +10,14 @@ commands:
     content  <template_name>                 Print content of template
     rm       [template_name...]              Remove template
     export   <template_name>                 Export content of template to current dir
-    init     <template_name> [project name]  Initialize directory from template
+    init     <template_name...>              Initialize directory and apply templates
     save     [template_name]                 Save current directory as template
-    help                                     Show this help
-    install                                  Install this script to /usr/bin/mkproj
+    backup   <archive name>                  Compress all templates to tar.gz
+    restore  <archive name>                  Unpack all templates from tar.gz
+    pull                                     Pull templates from remote repo
+    push                                     Push templates to remote repo
+    help                                     Show help
+    install                                  Install script to /usr/bin/mkproj
 ```
 
 

@@ -179,6 +179,25 @@ function export_template {
   success "Content of $NAME exported"
 }
 
+function pull_repository {
+  if [ ! -d "$ROOT/.git" ]; then
+    __error "$ROOT must be initialized git repo"
+    exit 1
+  fi
+
+  cd "$ROOT"
+  git pull
+}
+
+function push_repository {
+  if [ ! -d "$ROOT/.git" ]; then
+    __error "$ROOT must be initialized git repo"
+    exit 1
+  fi
+  cd "$ROOT"
+  git push
+}
+
 case "$1" in
   "init" )
   init "${@:2}"
@@ -207,6 +226,12 @@ case "$1" in
   "restore" )
     restore "${@:2}"
   ;;
+  "pull" )
+    pull_repository
+  ;;
+  "push" )
+    push_repository
+  ;;
   "help" | "-h" | "--help" )
   echo "Operate directory templates"
   echo "commands:"
@@ -220,6 +245,10 @@ case "$1" in
   echo "    save     [template_name]                 Save current directory as template"
   echo "    backup   <archive name>                  Compress all templates to tar.gz"
   echo "    restore  <archive name>                  Unpack all templates from tar.gz"
+  if [ -d "$ROOT/.git" ]; then
+    echo "    pull                                     Pull templates from remote repo"
+    echo "    push                                     Push templates to remote repo"
+  fi
   echo "    help                                     Show this help"
   echo "    install                                  Install this script to /usr/bin/mkproj"
   ;;
